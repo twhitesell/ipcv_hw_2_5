@@ -13,7 +13,7 @@ namespace IPCV_HW_2_5
 
         }
 
-        public Bitmap OperateOverArrayWithSize(int[,] array, int x, int y)
+       /* public Bitmap OperateOverArrayWithSize(int[,] array, int x, int y)
         {
             var bitmap = new Bitmap(x, y);
 
@@ -28,6 +28,23 @@ namespace IPCV_HW_2_5
                 }
             }
             return bitmap;
+
+        }*/
+
+        public bool[,] OperateOverArrayWithSize(int[, ] array, int x, int y)
+        {
+            bool[,] binary = new bool[x, y];
+
+            for (int i = 0; i < x; i++)
+            {
+                for (int j = 0; j < y; j++)
+                {
+                    bool value = CheckAtPosition(array, i, j, x, y);
+                    if (value) binary[i, j] = true;
+                }
+            }
+            return binary;
+
 
         }
 
