@@ -64,27 +64,10 @@ namespace IPCV_HW_2_5
                 var currentdir = Directory.GetCurrentDirectory();
                 Image myImage = Image.FromFile(inputfile);
                 var bitmap = new Bitmap(myImage);
-                //Bitmap gray = GetGrayscaleImage(bitmap);
-                //create log filter
+                var edgeImage = GetEdgeImage(bitmap);
+                
 
-                var sigma = GetSigma();
-                int m = GetM(sigma);
-
-                var op = new LoG_Operator(m, sigma);
-
-
-                //create image large enough to convolve based on grayscale image
-                var paddedArray = PadImageForConvolution(bitmap, m);
-                //paddedGray.Save(currentdir + "\\" + "paddedGray.bmp");
-
-                //get convolved image output
-                var stuf = op.Convolve(bitmap, paddedArray);
-
-
-                //do zero crossing filter ==> output bitmap of he same size as myImage
-                var output = new ZeroCrossingOperator().OperateOverArrayWithSize(stuf, bitmap.Width, bitmap.Height);
-
-                output.Save(currentdir + "\\" + outputfile);
+                //output.Save(currentdir + "\\" + outputfile);
                 Write(String.Format("File: {0} generated ok.", outputfile));
                 return true;
             }
@@ -95,6 +78,35 @@ namespace IPCV_HW_2_5
             }
         }
 
+
+
+        /// <summary>
+        /// returns edge binary image
+        /// </summary>
+        private static Bitmap GetEdgeImage(Bitmap bitmap)
+        {
+//Bitmap gray = GetGrayscaleImage(bitmap);
+            //create log filter
+
+            var sigma = GetSigma();
+            int m = GetM(sigma);
+
+            var op = new LoG_Operator(m, sigma);
+
+
+            //create image large enough to convolve based on grayscale image
+            var paddedArray = PadImageForConvolution(bitmap, m);
+            //paddedGray.Save(currentdir + "\\" + "paddedGray.bmp");
+
+            //get convolved image output
+            var stuf = op.Convolve(bitmap, paddedArray);
+
+
+            //do zero crossing filter ==> output bitmap of he same size as myImage
+            var edgeImage = new ZeroCrossingOperator().OperateOverArrayWithSize(stuf, bitmap.Width, bitmap.Height);
+
+            return edgeImage;
+        }
 
 
         /// <summary>
