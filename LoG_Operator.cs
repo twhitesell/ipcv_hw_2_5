@@ -87,7 +87,7 @@ namespace IPCV_HW_2_5
         private void GetK()
         {
             K = 10;
-            while (Math.Abs(GetSlidesValue(0, 0)) < (Scale*2))
+            while (Math.Abs(GetSlidesValue(0, 0)) < (Scale))
                 K += 10;
 
         }
