@@ -14,26 +14,13 @@ namespace IPCV_HW_2_5
 
         }
 
-       /* public Bitmap OperateOverArrayWithSize(int[,] array, int x, int y)
-        {
-            var bitmap = new Bitmap(x, y);
-
-            for (int i = 0; i < x; i++)
-            {
-                for (int j = 0; j < y; j++)
-                {
-                    bool value = CheckAtPosition(array, i, j, x, y);
-                    if (value) bitmap.SetPixel(i, j, Color.White);
-                    else bitmap.SetPixel(i, j, Color.Black);
-
-                }
-            }
-            return bitmap;
-
-        }*/
+       
 
         public bool[,] OperateOverArrayWithSize(int[, ] array, int x, int y)
         {
+
+            var bitmap = new Bitmap(x, y);
+           // var bmp = BitmapOverArrayWithSize(array, x, y);
             bool[,] binary = new bool[x, y];
 
             for (int i = 0; i < x; i++)
@@ -41,9 +28,18 @@ namespace IPCV_HW_2_5
                 for (int j = 0; j < y; j++)
                 {
                     bool value = CheckAtPosition(array, i, j, x, y);
-                    if (value) binary[i, j] = true;
+                    if (value)
+                    {
+                        binary[i, j] = true;
+                        bitmap.SetPixel(i, j, Color.White);
+                    }
+                    else
+                    {
+                        bitmap.SetPixel(i, j, Color.Black);
+                    }
                 }
             }
+            bitmap.Save("edgeImage.bmp");
             return binary;
 
 

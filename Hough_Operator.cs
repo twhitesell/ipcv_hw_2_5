@@ -82,7 +82,7 @@ namespace IPCV_HW_2_5
                     {
                         if (HoP_Matrix[i, j] >= localmax)
                         {
-                        phiThetaMaximals.Add(new PhiThetaMaximal(i - Rho, j - 90));
+                            phiThetaMaximals.Add(new PhiThetaMaximal(i - Rho, j));
                         }
                     }
                 }
@@ -120,40 +120,27 @@ namespace IPCV_HW_2_5
         {
             if (edgeImage[i, j])
             {
-                for (int normaltheta = 0; normaltheta < 180; normaltheta++)
+                for (int theta = 0; theta < 180; theta++)
                 {
-                    var theta = normaltheta - 90;
+                    
                     var radtheta = theta*180/Math.PI;
-                    var phi = Normalize((int) (i*Math.Cos(radtheta) + j*Math.Sin(radtheta)) + Rho);
+                    var phi = (int) (i*Math.Cos(radtheta) + j*Math.Sin(radtheta)) + Rho;
 
                     if (phi < Scale)
                     {
-                        HoP_Matrix[phi, normaltheta] ++;
+                        HoP_Matrix[phi, theta] ++;
+                    }
+                    else
+                    {
+                        
                     }
                 }
             }
             return i;
         }
 
-        /// <summary>
-        /// gets transform intensity at A(phi,theta)
-        /// </summary>
-        public int GetValueAt(int phi, int theta)
-        {
-            var adjphi = Normalize(phi);
-            if (adjphi <= Scale)
-            {
-                //ok, it will be in the array somewhere, return it
-                return HoP_Matrix[adjphi, theta];
-            }
-            return 0;
-        }
-
-        //must offset upwards by a value of rho to get the appropriate location...as the actual values output will be members of a set symmetrical about 0, that is, +- image diagonal
-        private int Normalize(int phi)
-        {
-            return phi + Rho;
-        }
+      
+        
 
 
         /// <summary>
