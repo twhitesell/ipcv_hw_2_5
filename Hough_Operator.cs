@@ -10,9 +10,22 @@ using AForge;
 
 namespace IPCV_HW_2_5
 {
+    class PhiThetaMaximal
+    {
+        public int Phi;
+        public int Theta;
+
+        public PhiThetaMaximal(int phi, int theta)
+        {
+            Phi = phi;
+            Theta = theta;
+        }
+
+
+    }
     class Hough_Operator
     {
-
+        private List<PhiThetaMaximal> phiThetaMaximals;
         private int Rho { get; set; }
         private int[,] HoP_Matrix { get; set; }
         private bool[,] ThresholdMatrix { get; set; }
@@ -21,6 +34,7 @@ namespace IPCV_HW_2_5
 
         public Hough_Operator(int imageDiagonalSize)
         {
+            phiThetaMaximals = new List<PhiThetaMaximal>();
             Rho = imageDiagonalSize;
             Scale = Rho*2 + 1;
             HoP_Matrix = new int[Scale, 180];
@@ -47,6 +61,16 @@ namespace IPCV_HW_2_5
         public void DrawLines(Bitmap bitmap, int localmax, string outfile)
         {
              DoThreshold(localmax,bitmap,outfile);
+            foreach (var kvp in phiThetaMaximals)
+            {
+                DrawLineOnBitmap(kvp.Phi,kvp.Theta,bitmap);
+
+
+            }
+
+
+
+            bitmap.Save(outfile);
         }
 
         private void DoThreshold(int localmax, Bitmap bitmap, string filename)
@@ -58,28 +82,27 @@ namespace IPCV_HW_2_5
                     {
                         if (HoP_Matrix[i, j] >= localmax)
                         {
-                            DrawLineOnBitmap(i, j, bitmap);
+                        phiThetaMaximals.Add(new PhiThetaMaximal(i - Rho, j - 90));
                         }
-
                     }
                 }
-            bitmap.Save(filename);
+            
         }
 
-        private void DrawLineOnBitmap(int normalized, int theta, Bitmap bmp)
+        private void DrawLineOnBitmap(int phi, int theta, Bitmap bmp)
         {
-            var phi = normalized - Rho;
             //line given by 
             //phi = x * cos(theta) + y * sin(theta)
             //y = (phi - x * cos(theta))/sin(theta)
             //get where x = 0;
-            var s = Math.Sin(theta);
+            var radtheta = theta * 180 / Math.PI;
+            var s = Math.Sin(radtheta);
             if (s == 0) return;
-            var c = Math.Cos(theta);
+            var c = Math.Cos(radtheta);
             for (int i = 0; i < bmp.Width; i++)
             {
-                var y = (phi - i * c) / s;
-                if (y <= bmp.Width && y >= 0)
+                var y = Math.Abs((phi - (i * c)) / s);
+                if (y <= bmp.Height)
                 {
                     bmp.SetPixel(i, (int) y, Color.Red);
                 }
@@ -97,13 +120,15 @@ namespace IPCV_HW_2_5
         {
             if (edgeImage[i, j])
             {
-                for (int theta = 0; theta < 180; theta++)
+                for (int normaltheta = 0; normaltheta < 180; normaltheta++)
                 {
-                    var phi = Normalize((int) (i*Math.Cos(theta) + j*Math.Sin(theta)) + Rho);
+                    var theta = normaltheta - 90;
+                    var radtheta = theta*180/Math.PI;
+                    var phi = Normalize((int) (i*Math.Cos(radtheta) + j*Math.Sin(radtheta)) + Rho);
 
                     if (phi < Scale)
                     {
-                        HoP_Matrix[phi, theta] ++;
+                        HoP_Matrix[phi, normaltheta] ++;
                     }
                 }
             }

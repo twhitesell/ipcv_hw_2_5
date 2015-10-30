@@ -65,6 +65,7 @@ namespace IPCV_HW_2_5
                 var edgeImage = GetEdgeImage(bitmap);
                 var ho = new Hough_Operator(ImageDiagonalSize(bitmap));
                 var max = ho.Operate(edgeImage, bitmap.Width, bitmap.Height);
+                //get the threshold value for what local max is
                 var localmax = (int) (max*.9);
                 ho.DrawLines(bitmap, localmax, outputfile);
                 Write(String.Format("File: {0} generated ok.", outputfile));
@@ -167,8 +168,6 @@ namespace IPCV_HW_2_5
         /// <summary>
         /// gets a minimal value for m
         /// </summary>
-        /// <param name="sigma"></param>
-        /// <returns></returns>
         private static int GetM(double sigma)
         {
             int res = (int)(6 * sigma);
