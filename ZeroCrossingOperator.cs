@@ -1,3 +1,4 @@
+using System;
 using System.Drawing;
 
 namespace IPCV_HW_2_5
@@ -50,27 +51,35 @@ namespace IPCV_HW_2_5
 
         private bool CheckAtPosition(int[,] array, int x, int y, int limitX, int limitY)
         {
-            //check up and down
-            if (y - 1 >= 0 && y + 1 < limitY)
+            try
             {
-                //do it
-                if (array[x, y - 1] * array[x, y + 1] < 0) return true;
-            }
+                //check up and down
+                if (y - 1 >= 0 && y + 1 < limitY)
+                {
+                    //do it
+                    if (array[x, y - 1]*array[x, y + 1] < 0) return true;
+                }
 
-            //check left and right
-            if (x - 1 >= 0 && x + 1 < limitX)
-            {
-                if (array[x - 1, y] * array[x + 1, y] < 0) return true;
-            }
+                //check left and right
+                if (x - 1 >= 0 && x + 1 < limitX)
+                {
+                    if (array[x - 1, y]*array[x + 1, y] < 0) return true;
+                }
 
-            //check topleft and bottom right
-            if (x - 1 >= 0 && x + 1 < limitX && y - 1 >= 0 && y + 1 < limitY)
-            {
-                //do both
-                if (array[x - 1, y - 1] * array[x + 1, y + 1] < 0) return true;
-                if (array[x + 1, y - 1] * array[x - 1, y + 1] < 0) return true;
+                //check topleft and bottom right
+                if (x - 1 >= 0 && x + 1 < limitX && y - 1 >= 0 && y + 1 < limitY)
+                {
+                    //do both
+                    if (array[x - 1, y - 1]*array[x + 1, y + 1] < 0) return true;
+                    if (array[x + 1, y - 1]*array[x - 1, y + 1] < 0) return true;
+                }
+                //check topright and bottom left
             }
-            //check topright and bottom left
+            catch (Exception e)
+            {
+                var s = e.Message;
+                
+            }
 
 
 

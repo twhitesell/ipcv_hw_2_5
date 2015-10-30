@@ -38,7 +38,8 @@ namespace IPCV_HW_2_5
                 ScaleMask(total);
                 total = CheckMask();
             }
-
+            Console.WriteLine(String.Format("Sum of mask coefficients: {0}", total));
+            PrintMask();
         }
 
         private void ScaleMask(int total)
@@ -51,7 +52,6 @@ namespace IPCV_HW_2_5
             {
                 EnhanceMask(total);
             }
-
 
         }
 
@@ -94,7 +94,7 @@ namespace IPCV_HW_2_5
 
         private int CheckMask()
         {
-            PrintMask();
+
             var total = 0;
             for (int i = 0; i < Scale; i++)
             {
@@ -117,7 +117,6 @@ namespace IPCV_HW_2_5
             }
             else
             {
-                Console.WriteLine(String.Format("Sum of mask: {0}", total));
                 return total;
             }
         }

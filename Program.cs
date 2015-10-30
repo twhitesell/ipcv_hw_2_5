@@ -53,21 +53,20 @@ namespace IPCV_HW_2_5
 
 
         /// <summary>
-        /// processes the histogram equalization
+        /// processes the 
         /// </summary>
         private static bool ProcessImage()
         {
             try
             {
-
                 // Open an Image file, and get its bitmap
-                var currentdir = Directory.GetCurrentDirectory();
                 Image myImage = Image.FromFile(inputfile);
                 var bitmap = new Bitmap(myImage);
                 var edgeImage = GetEdgeImage(bitmap);
                 var ho = new Hough_Operator(ImageDiagonalSize(bitmap));
-
-                //output.Save(currentdir + "\\" + outputfile);
+                var max = ho.Operate(edgeImage, bitmap.Width, bitmap.Height);
+                var localmax = (int) (max*.9);
+                ho.DrawLines(bitmap, localmax, outputfile);
                 Write(String.Format("File: {0} generated ok.", outputfile));
                 return true;
             }

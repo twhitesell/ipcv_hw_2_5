@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AForge.Imaging;
+using AForge;
 
 namespace IPCV_HW_2_5
 {
@@ -12,30 +15,79 @@ namespace IPCV_HW_2_5
 
         private int Rho { get; set; }
         private int[,] HoP_Matrix { get; set; }
-        private int MaxPhi { get; set; }
+        private bool[,] ThresholdMatrix { get; set; }
+        private int Scale { get; set; }
 
 
         public Hough_Operator(int imageDiagonalSize)
         {
             Rho = imageDiagonalSize;
-            MaxPhi = Rho*2 + 1;
-            HoP_Matrix = new int[MaxPhi, 180];
+            Scale = Rho*2 + 1;
+            HoP_Matrix = new int[Scale, 180];
+            ThresholdMatrix = new bool[Scale, 180];
 
         }
 
-
-        public void Operate(bool[,] edgeImage, int xsize, int ysize)
+        /// <summary>
+        /// returns maximum of A(phi,theta)
+        /// </summary>
+        public int Operate(bool[,] edgeImage, int xsize, int ysize)
         {
             for (int i = 0; i < xsize; i++)
             {
                 for (int j = 0; j < ysize; j++)
                 {
                     i = CheckEdge(edgeImage, i, j);
-
                 }
             }
-            PrintHopMatrix();
+            var max = GetMatrixMaximum();
+            return max;
         }
+
+        public void DrawLines(Bitmap bitmap, int localmax, string outfile)
+        {
+             DoThreshold(localmax,bitmap,outfile);
+        }
+
+        private void DoThreshold(int localmax, Bitmap bitmap, string filename)
+        {
+
+                for (int i = 0; i < Scale; i++)
+                {
+                    for (int j = 0; j < 180; j++)
+                    {
+                        if (HoP_Matrix[i, j] >= localmax)
+                        {
+                            DrawLineOnBitmap(i, j, bitmap);
+                        }
+
+                    }
+                }
+            bitmap.Save(filename);
+        }
+
+        private void DrawLineOnBitmap(int normalized, int theta, Bitmap bmp)
+        {
+            var phi = normalized - Rho;
+            //line given by 
+            //phi = x * cos(theta) + y * sin(theta)
+            //y = (phi - x * cos(theta))/sin(theta)
+            //get where x = 0;
+            var s = Math.Sin(theta);
+            if (s == 0) return;
+            var c = Math.Cos(theta);
+            for (int i = 0; i < bmp.Width; i++)
+            {
+                var y = (phi - i * c) / s;
+                if (y <= bmp.Width && y >= 0)
+                {
+                    bmp.SetPixel(i, (int) y, Color.Red);
+                }
+            }
+
+        }
+
+       
 
         /// <summary>
         /// checks for, and increments appropriately if found, a binary edge pixel at the given coordinates of an edge image
@@ -45,11 +97,11 @@ namespace IPCV_HW_2_5
         {
             if (edgeImage[i, j])
             {
-                for (int theta = 0; theta < 180; i++)
+                for (int theta = 0; theta < 180; theta++)
                 {
-                    var phi = Normalize((int) (i*Math.Cos(i) + j*Math.Sin(i)) + Rho);
+                    var phi = Normalize((int) (i*Math.Cos(theta) + j*Math.Sin(theta)) + Rho);
 
-                    if (phi < MaxPhi)
+                    if (phi < Scale)
                     {
                         HoP_Matrix[phi, theta] ++;
                     }
@@ -64,7 +116,7 @@ namespace IPCV_HW_2_5
         public int GetValueAt(int phi, int theta)
         {
             var adjphi = Normalize(phi);
-            if (adjphi <= MaxPhi)
+            if (adjphi <= Scale)
             {
                 //ok, it will be in the array somewhere, return it
                 return HoP_Matrix[adjphi, theta];
@@ -82,16 +134,23 @@ namespace IPCV_HW_2_5
         /// <summary>
         /// trace
         /// </summary>
-        private void PrintHopMatrix()
+        private int GetMatrixMaximum()
         {
-            for (int i = 0; i < MaxPhi; i++)
+            var max = 0;
+            for (int i = 0; i < Scale; i++)
             {
                 for (int j = 0; j < 180; j++)
                 {
-                    Console.Write(String.Format("|{0}|", HoP_Matrix[i, j]));
+                    if (HoP_Matrix[i, j] > max)
+                    {
+                        max = HoP_Matrix[i, j];
+                    }//Console.Write(String.Format("|{0}|", HoP_Matrix[i, j]));
                 }
-                Console.WriteLine("");
+                //Console.WriteLine("");
             }
+            return max;
         }
+
+      
     }
 }
