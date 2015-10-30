@@ -65,7 +65,7 @@ namespace IPCV_HW_2_5
                 Image myImage = Image.FromFile(inputfile);
                 var bitmap = new Bitmap(myImage);
                 var edgeImage = GetEdgeImage(bitmap);
-                
+                var ho = new Hough_Operator(ImageDiagonalSize(bitmap));
 
                 //output.Save(currentdir + "\\" + outputfile);
                 Write(String.Format("File: {0} generated ok.", outputfile));
@@ -78,12 +78,19 @@ namespace IPCV_HW_2_5
             }
         }
 
+        /// <summary>
+        /// returns count in pixels of the image diagonal
+        /// </summary>
+        private static int ImageDiagonalSize(Bitmap bitmap)
+        {
+            return (int) Math.Sqrt(bitmap.Height*bitmap.Height + bitmap.Width*bitmap.Width);
+        }
 
 
         /// <summary>
         /// returns edge binary image
         /// </summary>
-        private static Bitmap GetEdgeImage(Bitmap bitmap)
+        private static bool[,] GetEdgeImage(Bitmap bitmap)
         {
 //Bitmap gray = GetGrayscaleImage(bitmap);
             //create log filter
